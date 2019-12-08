@@ -1,6 +1,7 @@
 package ChineseNameRecognition;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author 20171003203 张宇暄
@@ -10,11 +11,15 @@ public class CorpusHandler {
     //读取语料库
     public void readCorpus(String Filename)throws Exception{
         File file = new File(Filename);
-        Reader reader = null;
-        reader = new InputStreamReader(new FileInputStream(file),"GBK");
+        //获取总行数
+        int lineCount = getFileCount(file);
+        Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
+        Writer trainWriter = new OutputStreamWriter(new FileOutputStream("Train.txt"), StandardCharsets.UTF_8);
+        Writer testWriter = new OutputStreamWriter(new FileOutputStream("Test.txt"), StandardCharsets.UTF_8);
         LineNumberReader lineNumberReader = new LineNumberReader(reader);
         String line;
         while((line = lineNumberReader.readLine()) != null){
+                boolean isTest = lineNumberReader.getLineNumber() > lineCount * 0.8;
                 String[] words = line.split("  ");
                 //标记前一个词的标注是否是/nr
                 boolean preTagIsNr = false;
@@ -36,11 +41,12 @@ public class CorpusHandler {
                             }else{
                                 tag = "B";
                             }
+                            preTagIsNr = false;
                         }else{
                             //如果前面不是/nr则判定为姓
                             tag = "F";
+                            preTagIsNr = true;
                         }
-                        preTagIsNr = true;
                     }else{
                         //如果标注不是/nr，判定为非人名
                         tag = "O";
@@ -48,7 +54,8 @@ public class CorpusHandler {
                     }
                     //如果是单字，直接打印
                     if (w.length() == 1){
-                        System.out.println(w + "/" + tag);
+                        writeToFile(trainWriter,testWriter,isTest,w ,tag);
+                        //System.out.println(w + "/" + tag);
                     }else{
                         //不是一个字，继续分词
                         for(int j = 0; j < w.length(); j++){
@@ -56,24 +63,49 @@ public class CorpusHandler {
                             if ("B".equals(tag)){
                                 if (j == 0){
                                     //名字的首字标注为B
-                                    System.out.println(c + "/" + "B");
+                                    writeToFile(trainWriter,testWriter,isTest,c , "B");
+                                    //System.out.println(c + "/" + "B");
                                 }else if (j == w.length()-1){
                                     //名字的尾字标注为E
-                                    System.out.println(c + "/" + "E");
+                                    writeToFile(trainWriter,testWriter,isTest,c , "E");
+                                    //System.out.println(c + "/" + "E");
                                 }else{
                                     //标注为中间字
-                                    System.out.println(c + "/" + "I");
+                                    writeToFile(trainWriter,testWriter,isTest,c, "I");
+                                    //System.out.println(c + "/" + "I");
                                 }
                             }else if ("F".equals(tag)){
                                 //姓氏标注
-                                System.out.println(c + "/" + "F");
+                                writeToFile(trainWriter,testWriter,isTest,c,"F");
+                                //System.out.println(c + "/" + "F");
                             }else{
                                 //非姓名标注
-                                System.out.println(c + "/" + "O");
+                                writeToFile(trainWriter,testWriter,isTest,c ,"O");
+                                //System.out.println(c + "/" + "O");
                             }
                         }
                     }
                 }
         }
+        trainWriter.close();
+        testWriter.close();
+        lineNumberReader.close();
+    }
+
+    private void writeToFile(Writer trainWriter,Writer testWriter,boolean isTest,String text,String tag)throws Exception{
+        if (isTest){
+            testWriter.write(text + "\t" + tag + "\r\n");
+        }else{
+            trainWriter.write(text + "\t" + tag + "\r\n");
+        }
+    }
+
+    private int getFileCount(File file)throws Exception{
+        LineNumberReader lineNumberReader = new LineNumberReader(new FileReader(file));
+        while (lineNumberReader.readLine() != null){
+        }
+        int count = lineNumberReader.getLineNumber();
+        lineNumberReader.close();
+        return  count;
     }
 }
