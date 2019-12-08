@@ -50,7 +50,7 @@ public class TextConvert {
                 }else if (tag.equals("E")||tag.equals("S")){
                     writer.write(word + "/nr ");
                     System.out.println(word);
-                }else if (tag.equals("I")){
+                }else if (tag.equals("I")||tag.equals("B")){
                     System.out.print(word);
                     writer.write(word);
                 }
@@ -62,9 +62,9 @@ public class TextConvert {
 
     public static void main(String[] args) throws Exception{
         TextConvert textConvert = new TextConvert();
-        File fileIn = new File("TestResult_1.txt");
-        File fileOut = new File("TestOut_1.txt");
-        textConvert.textToWords(fileIn,fileOut);
-        //textConvert.wordToText(fileIn,fileOut);
+        File fileIn = new File("output(testOut_1).txt");
+        File fileOut = new File("TestOut_1Result.txt");
+//        textConvert.textToWords(fileIn,fileOut);
+        textConvert.wordToText(fileIn,fileOut);
     }
 }
