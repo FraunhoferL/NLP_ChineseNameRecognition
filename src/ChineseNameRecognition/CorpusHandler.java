@@ -14,12 +14,13 @@ public class CorpusHandler {
         //获取总行数
         int lineCount = getFileCount(file);
         Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
-        Writer trainWriter = new OutputStreamWriter(new FileOutputStream("Train.txt"), StandardCharsets.UTF_8);
-        Writer testWriter = new OutputStreamWriter(new FileOutputStream("Test.txt"), StandardCharsets.UTF_8);
+        Writer trainWriter = new OutputStreamWriter(new FileOutputStream("Train.txt"), "GBK");
+        Writer testWriter = new OutputStreamWriter(new FileOutputStream("Test.txt"), "GBK");
         LineNumberReader lineNumberReader = new LineNumberReader(reader);
         String line;
         while((line = lineNumberReader.readLine()) != null){
-                boolean isTest = lineNumberReader.getLineNumber() > lineCount * 0.8;
+                //System.out.println(lineNumberReader.getLineNumber());
+                boolean isTest = (lineNumberReader.getLineNumber()-1)%5 == 0;
                 String[] words = line.split("  ");
                 //标记前一个词的标注是否是/nr
                 boolean preTagIsNr = false;
@@ -86,6 +87,11 @@ public class CorpusHandler {
                         }
                     }
                 }
+                if(isTest){
+                    testWriter.write("\n");
+                }else{
+                    trainWriter.write("\n");
+                }
         }
         trainWriter.close();
         testWriter.close();
@@ -94,9 +100,9 @@ public class CorpusHandler {
 
     private void writeToFile(Writer trainWriter,Writer testWriter,boolean isTest,String text,String tag)throws Exception{
         if (isTest){
-            testWriter.write(text + "\t" + tag + "\r\n");
+            testWriter.write(text + "\t" + tag + "\n");
         }else{
-            trainWriter.write(text + "\t" + tag + "\r\n");
+            trainWriter.write(text + "\t" + tag + "\n");
         }
     }
 
