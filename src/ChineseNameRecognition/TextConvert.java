@@ -62,8 +62,8 @@ public class TextConvert {
 
     public static void main(String[] args) throws Exception{
         TextConvert textConvert = new TextConvert();
-        File fileIn = new File("output(testOut_1).txt");
-        File fileOut = new File("TestOut_1Result.txt");
+        File fileIn = new File("output(test3).txt");
+        File fileOut = new File("Test3_Result.txt");
 //        textConvert.textToWords(fileIn,fileOut);
         textConvert.wordToText(fileIn,fileOut);
     }
