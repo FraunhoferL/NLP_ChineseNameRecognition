@@ -80,7 +80,7 @@ public class ResultEvaluate {
         String f_p = numberFormat.format(f);
         System.out.println("正确率为：" + p_p);
         System.out.println("召回率为：" + r_p);
-        System.out.println("F-度量值为：" + r_p);
+        System.out.println("F-度量值为：" + f_p);
     }
 
     public static void main(String[] args) throws Exception {
